@@ -9,8 +9,8 @@ from flask_jwt_extended import jwt_optional, get_jwt_identity, \
     create_access_token, set_access_cookies, unset_jwt_cookies, JWTManager
 from flask import Blueprint, jsonify, request
 
-from auth_tools.src.models import User, Role, BadIdentity, IntegrityError, \
-    start_fresh, AuthLog
+from indralab_auth_tools.src.models import User, Role, BadIdentity,\
+    IntegrityError, start_fresh, AuthLog
 
 auth = Blueprint('auth', __name__, template_folder='templates')
 

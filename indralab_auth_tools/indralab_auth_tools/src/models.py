@@ -1,9 +1,9 @@
 import os
+import scrypt
 from base64 import b64encode
 from datetime import datetime
 from time import sleep
 
-from rest_api.database import Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import relationship, backref, sessionmaker
 from sqlalchemy import Boolean, DateTime, Column, Integer, \
@@ -12,8 +12,8 @@ from sqlalchemy.dialects.postgresql import JSON
 
 from sqlalchemy.exc import IntegrityError
 
-import scrypt
 
+from indralab_auth_tools.src.database import Base
 
 engine = create_engine(os.environ['INDRALAB_USERS_DB'])
 DBSession = sessionmaker(bind=engine)
