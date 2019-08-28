@@ -1,0 +1,1 @@
+include indralab_auth_tools/templates/auth_macros.html
