@@ -8,7 +8,7 @@ def main():
           author_email='patrick_greene@hms.harvard.edu',
           url='http://github.com/indralab/ui_util',
           packages=find_packages(),
-          install_requires=['flask-jwt-extended', 'flask', 'sqlalchemy'],
+          install_requires=['flask-jwt-extended', 'flask', 'sqlalchemy', 'scrypt'],
           include_package_data=True)
 
 
