@@ -7,7 +7,7 @@ from http.cookies import SimpleCookie
 
 from flask_jwt_extended import jwt_optional, get_jwt_identity, \
     create_access_token, set_access_cookies, unset_jwt_cookies, JWTManager
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, redirect
 
 from indralab_auth_tools.src.models import User, Role, BadIdentity,\
     IntegrityError, start_fresh, AuthLog
@@ -28,6 +28,13 @@ def config_auth(app):
     app.config['EXPLAIN_TEMPLATE_LOADING'] = True
     SC = SimpleCookie()
     jwt = JWTManager(app)
+
+    @jwt.expired_token_loader
+    def handle_expired_token(token):
+        resp = redirect(request.url)
+        unset_jwt_cookies(resp)
+        return resp
+
     return SC, jwt
 
 
