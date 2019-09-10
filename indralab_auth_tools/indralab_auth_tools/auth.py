@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def config_auth(app):
     app.config['JWT_SECRET_KEY'] = environ['INDRADB_JWT_SECRET']
-    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 2592000  # 30 days
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 3*30*24*60*60  # Around 3 months
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
     app.config['JWT_COOKIE_SECURE'] = True
     app.config['JWT_SESSION_COOKIE'] = False
