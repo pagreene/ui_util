@@ -1,0 +1,24 @@
+{% macro source_target(source, target, path_list, headers=[], id=None) -%}
+<table class="table">
+  {% if len(headers) > 0 %}
+  <thead class="table-head">
+  {% for header in headers %}
+    <th>{{ header }}</th>
+  {% endfor %}
+  </thead>
+  {% endif %}
+  <tbody class="table-body"{% if id %}id="{{ id }}"{% endif %}>
+    path_table(path_list)
+  </tbody>
+</table>
+{%- endmacro %}
+
+{% macro path_table(paths) -%}
+  {% for path_cols in paths %}
+  <tr>
+  {% for href, link_text in path_cols %}
+    <td><a {% if href %}href="{{ href }}"{% endif %}>{{ link_text }}</a></td>
+  {% endfor %}
+  </tr>
+  {% endfor %}
+{%- endmacro %}
