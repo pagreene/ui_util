@@ -1,4 +1,26 @@
-{% macro source_target(source, target, path_list, headers=[], id=None) -%}
+{% macro collapsible_path_card(path_list, card_header, card_id, table_headers=[], table_id=None) -%}
+  <div class="card" id="{{ card_id }}">
+    <div class="card-header">
+      <h3 class="display-7">
+        <a href="#"
+           class="stmt_toggle"
+           data-toggle="collapse"
+           aria-expanded="true"
+           data-target="#{{ card_id }}_body"
+           aria-controls="{{ card_id }}_body">
+          {{ card_header }}
+        </a>
+      </h3>
+    </div>
+    <div class="collapse" id="{{ card_id }}_body">
+      <div class="card-body">
+        path_table(path_list, table_headers, table_id)
+      </div>
+    </div>
+  </div>
+{%- endmacro %}
+
+{% macro path_table(path_list, headers=[], id=None) -%}
 <table class="table">
   {% if len(headers) > 0 %}
   <thead class="table-head">
@@ -8,12 +30,12 @@
   </thead>
   {% endif %}
   <tbody class="table-body"{% if id %}id="{{ id }}"{% endif %}>
-    path_table(path_list)
+    path_table_contents(path_list)
   </tbody>
 </table>
 {%- endmacro %}
 
-{% macro path_table(paths) -%}
+{% macro path_table_contents(paths) -%}
   {% for path_cols in paths %}
   <tr>
   {% for href, link_text in path_cols %}
