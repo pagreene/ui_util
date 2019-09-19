@@ -39,7 +39,7 @@
   {% for path_cols in paths %}
   <tr>
   {% for href, link_text in path_cols %}
-    <td><a {% if href %}href="{{ href }}"{% endif %}>{{ link_text }}</a></td>
+    <td>{% if href %}<a href="{{ href }}">{{ link_text }}</a>{% else %}{{ link_text }}{% endif %}</td>
   {% endfor %}
   </tr>
   {% endfor %}
