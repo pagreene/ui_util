@@ -14,7 +14,7 @@
     </div>
     <div class="collapse" id="{{ card_id }}_body">
       <div class="card-body">
-        path_table(path_list, table_headers, table_id)
+        {{ path_table(path_list, table_headers, table_id) }}
       </div>
     </div>
   </div>
@@ -22,24 +22,30 @@
 
 {% macro path_table(path_list, headers=[], id=None) -%}
 <table class="table">
-  {% if len(headers) > 0 %}
+  {% if headers %}
   <thead class="table-head">
   {% for header in headers %}
     <th>{{ header }}</th>
   {% endfor %}
   </thead>
   {% endif %}
-  <tbody class="table-body"{% if id %}id="{{ id }}"{% endif %}>
-    path_table_contents(path_list)
+  <tbody class="table-body" {% if id %}id="{{ id }}"{% endif %}>
+    {{ path_table_contents(path_list) }}
   </tbody>
 </table>
 {%- endmacro %}
 
 {% macro path_table_contents(paths) -%}
-  {% for path_cols in paths %}
+  {% for row in paths %}
   <tr>
-  {% for href, link_text in path_cols %}
-    <td>{% if href %}<a href="{{ href }}">{{ link_text }}</a>{% else %}{{ link_text }}{% endif %}</td>
+  {% for link_address, link_text in row %}
+    <td>
+    {% if link_address %}
+      <a href="{{ link_address }}">{{ link_text }}</a>
+    {% else %}
+      {{ link_text }}
+    {% endif %}
+    </td>
   {% endfor %}
   </tr>
   {% endfor %}
