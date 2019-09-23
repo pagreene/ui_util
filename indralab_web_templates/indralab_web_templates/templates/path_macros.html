@@ -36,7 +36,7 @@
   {% if headers %}
   <thead class="table-head">
   {% for header in headers %}
-    <th>{{ header }}</th>
+    <th {% if header != "Test" %}style="width: 15%; text-align: center"{% endif %}>{{ header }}</th>
   {% endfor %}
   </thead>
   {% endif %}
