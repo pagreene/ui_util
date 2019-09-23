@@ -53,6 +53,14 @@
     <td>
     {% if link_address %}
       <a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a>
+{# Pass: <i class="fas fa-check"></i>#}
+{# Fail: <i class="fas fa-times"></i>#}
+{# See more at:#}
+{# https://fontawesome.com/icons?d=gallery#}
+    {% elif link_text == 'Pass' %}
+      <i class="fas fa-check"></i>
+    {% elif link_text == 'Fail' %}
+      <i class="fas fa-times"></i>
     {% else %}
       {{ link_text }}
     {% endif %}
