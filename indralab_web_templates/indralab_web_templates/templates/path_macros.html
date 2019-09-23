@@ -51,21 +51,19 @@
   {% for row in paths %}
   <tr>
   {% for link_address, link_text in row %}
-    <td>
     {% if link_address %}
-      <a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a>
+      <td><a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a></td>
 {# Pass: <i class="fas fa-check"></i>#}
 {# Fail: <i class="fas fa-times"></i>#}
 {# See more at:#}
 {# https://fontawesome.com/icons?d=gallery#}
     {% elif link_text == 'Pass' %}
-      <i class="fas fa-check"></i>
+      <td style="text-align: center"><i class="fas fa-check"></i></td>
     {% elif link_text == 'Fail' %}
-      <i class="fas fa-times"></i>
+      <td style="text-align: center"><i class="fas fa-times"></i></td>
     {% else %}
-      {{ link_text }}
+      <td>{{ link_text }}</td>
     {% endif %}
-    </td>
   {% endfor %}
   </tr>
   {% endfor %}
