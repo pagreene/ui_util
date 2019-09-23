@@ -35,6 +35,7 @@
 <table class="table">
   {% if headers %}
   <thead class="table-head">
+    <th>Test</th>
   {% for header in headers %}
     <th {% if header != "Test" %}style="width: 15%; text-align: center"{% endif %}>{{ header }}</th>
   {% endfor %}
