@@ -52,7 +52,7 @@
   {% for link_address, link_text in row %}
     <td>
     {% if link_address %}
-      <a href="{{ link_address }}">{{ link_text }}</a>
+      <a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a>
     {% else %}
       {{ link_text }}
     {% endif %}
