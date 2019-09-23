@@ -1,7 +1,7 @@
 {% macro collapsible_path_card(path_list, card_header, card_id, table_headers=[], table_id=None) -%}
   <div class="card" id="{{ card_id }}">
     <div class="card-header">
-      <h3 class="display-7">
+      <h4 class="my-0 font-weight-normal">
         <a href="#"
            class="stmt_toggle"
            data-toggle="collapse"
@@ -10,12 +10,23 @@
            aria-controls="{{ card_id }}_body">
           {{ card_header }}
         </a>
-      </h3>
+      </h4>
     </div>
     <div class="collapse" id="{{ card_id }}_body">
       <div class="card-body">
         {{ path_table(path_list, table_headers, table_id) }}
       </div>
+    </div>
+  </div>
+{%- endmacro %}
+
+{% macro path_card(path_list, card_header, card_id, table_headers=[], table_id=None) -%}
+  <div class="card" id="{{ card_id }}">
+    <div class="card-header">
+      <h4 class="my-0 font-weight-normal">{{ card_header }}</h4>
+    </div>
+    <div class="card-body">
+      {{ path_table(path_list, table_headers, table_id) }}
     </div>
   </div>
 {%- endmacro %}
