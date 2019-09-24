@@ -20,24 +20,24 @@
   </div>
 {%- endmacro %}
 
-{% macro path_card(path_list, card_header, card_id, table_headers=[], table_id=None) -%}
+{% macro path_card(path_list, card_header, card_id, table_headers=[], table_id=None, full_path=false) -%}
   <div class="card" id="{{ card_id }}">
     <div class="card-header">
       <h4 class="my-0 font-weight-normal">{{ card_header }}</h4>
     </div>
     <div class="card-body">
-      {{ path_table(path_list, table_headers, table_id) }}
+      {{ path_table(path_list, table_headers, table_id, full_path) }}
     </div>
   </div>
 {%- endmacro %}
 
-{% macro path_table(path_list, headers=[], id=None) -%}
+{% macro path_table(path_list, headers=[], id=None, full_path=false) -%}
 <table class="table">
   {% if headers %}
   <thead class="table-head">
   {% for header in headers %}
   {% if "Test" in headers %}
-    <th {% if header != "Test" %}style="width: 15%; text-align: center"{% endif %}>{{ header }}</th>
+    <th {% if header != "Test" and not full_path %}style="width: 15%; text-align: center"{% endif %}>{{ header }}</th>
   {% else %}
     <th>{{ header }}</th>
   {% endif %}
@@ -45,7 +45,11 @@
   </thead>
   {% endif %}
   <tbody class="table-body" {% if id %}id="{{ id }}"{% endif %}>
-    {{ path_table_contents(path_list) }}
+    {% if full_path %}
+      {{ full_path_table_contents(path_list) }}
+    {% else %}
+      {{ path_table_contents(path_list) }}
+    {% endif %} 
   </tbody>
 </table>
 {%- endmacro %}
@@ -68,6 +72,24 @@
       <td>{{ link_text }}</td>
     {% endif %}
   {% endfor %}
+  </tr>
+  {% endfor %}
+{%- endmacro %}
+
+{% macro full_path_table_contents(paths) -%}
+  {% for row in paths %}
+  <tr>
+    {% for res_list in row %}
+    <td>
+      {% for link_address, link_text in res_list %}
+        {% if link_address %}
+          <a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a><br>
+        {% else %}
+          {{ link_text }}
+        {% endif %}
+      {% endfor %}
+    </td>
+    {% endfor %}
   </tr>
   {% endfor %}
 {%- endmacro %}
