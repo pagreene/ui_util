@@ -80,12 +80,19 @@
   {% for row in paths %}
   <tr>
     {% for res_list in row %}
-    <td>
+      {% if loop.length == 1 %}
+        <td colspan="2" style="text-align:center; font-weight: bold;">
+      {%else %}
+        <td>
+      {% endif %}
       {% for link_address, link_text in res_list %}
         {% if link_address %}
-          <a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a><br>
+          <a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a>
         {% else %}
           {{ link_text }}
+        {% endif %}
+        {% if not loop.last %}
+          <br>
         {% endif %}
       {% endfor %}
     </td>
