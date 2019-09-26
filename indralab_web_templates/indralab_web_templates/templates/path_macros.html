@@ -109,8 +109,10 @@
     <div class="card-body">
       <table class="table">
         <thead class="table-head">
-          <th style="width: 15%; text-align: center">Path</th>
-          <th>Support</th>
+          <tr>
+            <th style="width: 15%; text-align: center">Path</th>
+            <th>Support</th>
+          </tr>
         </thead>
         <tbody class="table-body" {% if id %}id="{{ id }}"{% endif %}>
           {{ detailed_paths_table_contents(path_list) }}
