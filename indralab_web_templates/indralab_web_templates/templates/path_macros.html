@@ -100,3 +100,38 @@
   </tr>
   {% endfor %}
 {%- endmacro %}
+
+{% macro detailed_paths(path_list, card_header, card_id=None, table_id=None) -%}
+  <div class="card" {% if card_id %}id="{{ card_id }}"{% endif %}>
+    <div class="card-header">
+      <h4 class="my-0 font-weight-normal">{{ card_header }}</h4>
+    </div>
+    <div class="card-body">
+      <table class="table">
+        <thead class="table-head">
+          <th style="width: 15%; text-align: center">Path</th>
+          <th>Support</th>
+        </thead>
+        <tbody class="table-body" {% if id %}id="{{ id }}"{% endif %}>
+          {{ detailed_paths_table_contents(path_list) }}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{%- endmacro %}
+
+{% macro detailed_paths_table_contents(path_list) -%}
+  {% for path_dict in path_list %}
+  <tr>
+    <td>{{ path_dict.path }}</td>
+    <td>
+      {% for edge_dict in path_dict.edge_list %}
+        <b>{{ edge_dict.edge }}</b><br>
+        {% for link_address, link_text in edge_dict.stmts %}
+          <a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a><br>
+        {% endfor %}
+      {% endfor %}
+    </td>
+  </tr>
+  {% endfor %}
+{%- endmacro %}
