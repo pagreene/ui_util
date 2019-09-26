@@ -101,6 +101,26 @@
   {% endfor %}
 {%- endmacro %}
 
+{# Structure of path_list:
+path_list = [{"path": "A-X1-X2-B",
+              "edge_list": [{
+                  "edge": "A-X1",
+                  "stmts": [(href1, "A activates X1"),
+                            (href2, "A phosphorylates X1")]
+                  },
+                  {"edge": "X1-X2",
+                   "stmts": [(href1, "X1 deactivates X2"),
+                             (href2, "X1 inhibits X2")]
+                   },
+                  {"edge": "X2-X3",
+                   "stmts": [(href1, "X2 inhibits B"),
+                             (href2, "X2 deactivates B")]
+                   }]
+               },
+              {"path": "A-Y1-Y2-B",
+               "edge_list": [{ ... }]
+             ]
+#}
 {% macro detailed_paths(path_list, card_header, card_id=None, table_id=None) -%}
   <div class="card" {% if card_id %}id="{{ card_id }}"{% endif %}>
     <div class="card-header">
