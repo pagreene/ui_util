@@ -124,13 +124,18 @@ path_list = [{"path": "A-X1-X2-B",
 {% macro detailed_paths(path_list, card_header, card_id=None, table_id=None) -%}
   <div class="card" {% if card_id %}id="{{ card_id }}"{% endif %}>
     <div class="card-header">
-      <h4 class="my-0 font-weight-normal">{{ card_header }}</h4>
+      {% if card_header|length == 2 %}
+        {% set href, text = card_header %}
+        <h4 class="my-0 font-weight-normal"><a href="{{ href }}" class="stmt-dblink" target="_blank">{{ text }}</a></h4>
+      {% else %}
+        <h4 class="my-0 font-weight-normal">{{ card_header }}</h4>
+      {% endif %}
     </div>
     <div class="card-body">
       <table class="table">
         <thead class="table-head">
           <tr>
-            <th style="width: 15%; text-align: center">Path</th>
+            <th>Path</th>
             <th>Support</th>
           </tr>
         </thead>
