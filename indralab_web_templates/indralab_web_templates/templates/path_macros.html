@@ -168,3 +168,8 @@ path_list = [{"path": "A-X1-X2-B",
   </tr>
   {% endfor %}
 {%- endmacro %}
+
+{% macro failing_test_card_body(msg) -%}
+  <p>The test failed with the following code: {{ msg }}</p>
+  <p>To see more information about tests, see the <a href="https://emmaa.readthedocs.io/en/latest/dashboard/response_codes.html">documentation</a>.</p>
+{%- endmacro %}
