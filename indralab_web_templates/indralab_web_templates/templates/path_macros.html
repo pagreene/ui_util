@@ -58,16 +58,20 @@
   {% for row in paths %}
   <tr>
   {% for link_address, link_text in row %}
-    {% if link_address %}
-      <td><a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a></td>
-{# Pass: <i class="fas fa-check"></i>#}
-{# Fail: <i class="fas fa-times"></i>#}
-{# See more at:#}
-{# https://fontawesome.com/icons?d=gallery#}
-    {% elif link_text == 'Pass' %}
-      <td style="text-align: center"><i class="fas fa-check"></i></td>
+    {# Pass: <i class="fas fa-check"></i>#}
+    {# Fail: <i class="fas fa-times"></i>#}
+    {# See more at:#}
+    {# https://fontawesome.com/icons?d=gallery#}
+    {% if link_text == 'Pass' %}
+      <td style="text-align: center">
+        <a href="{{ link_address }}" target="_blank">
+          <i class="fas fa-check"></i>
+        </a>
+      </td>
     {% elif link_text == 'Fail' %}
       <td style="text-align: center"><i class="fas fa-times"></i></td>
+    {% elif link_address %}
+      <td><a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a></td>
     {% else %}
       <td>{{ link_text }}</td>
     {% endif %}
