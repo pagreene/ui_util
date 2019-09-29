@@ -20,24 +20,24 @@
   </div>
 {%- endmacro %}
 
-{% macro path_card(path_list, card_header, card_id, table_headers=[], table_id=None, full_path=false) -%}
+{% macro path_card(path_list, card_header, card_id, table_headers=[], table_id=None, merge=false) -%}
   <div class="card" id="{{ card_id }}">
     <div class="card-header">
       <h4 class="my-0 font-weight-normal">{{ card_header }}</h4>
     </div>
     <div class="card-body">
-      {{ path_table(path_list, table_headers, table_id, full_path) }}
+      {{ path_table(path_list, table_headers, table_id, merge) }}
     </div>
   </div>
 {%- endmacro %}
 
-{% macro path_table(path_list, headers=[], id=None, full_path=false) -%}
+{% macro path_table(path_list, headers=[], id=None, merge=false) -%}
 <table class="table">
   {% if headers %}
   <thead class="table-head">
   {% for header in headers %}
   {% if "Test" in headers %}
-    <th {% if header != "Test" and not full_path %}style="width: 15%; text-align: center"{% endif %}>{{ header }}</th>
+    <th {% if header != "Test" and header != "Top Path" %}style="width: 15%; text-align: center"{% endif %}>{{ header }}</th>
   {% else %}
     <th>{{ header }}</th>
   {% endif %}
@@ -45,16 +45,12 @@
   </thead>
   {% endif %}
   <tbody class="table-body" {% if id %}id="{{ id }}"{% endif %}>
-    {% if full_path %}
-      {{ full_path_table_contents(path_list) }}
-    {% else %}
-      {{ path_table_contents(path_list) }}
-    {% endif %} 
+    {{ path_table_contents(path_list, merge) }}
   </tbody>
 </table>
 {%- endmacro %}
 
-{% macro path_table_contents(paths) -%}
+{% macro path_table_contents(paths, merge=false) -%}
   {% for row in paths %}
   <tr>
   {% for link_address, link_text in row %}
@@ -77,34 +73,13 @@
     {% elif link_address %}
       <td><a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a></td>
     {% else %}
-      <td>{{ link_text }}</td>
+      {% if merge and loop.length == 1%} 
+        <td colspan="2" style="text-align:center; font-weight: bold;">{{ link_text }}</td>
+      {% else %}
+        <td>{{ link_text }}</td>
+      {% endif %}
     {% endif %}
   {% endfor %}
-  </tr>
-  {% endfor %}
-{%- endmacro %}
-
-{% macro full_path_table_contents(paths) -%}
-  {% for row in paths %}
-  <tr>
-    {% for res_list in row %}
-      {% if loop.length == 1 %}
-        <td colspan="2" style="text-align:center; font-weight: bold;">
-      {%else %}
-        <td>
-      {% endif %}
-      {% for link_address, link_text in res_list %}
-        {% if link_address %}
-          <a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a>
-        {% else %}
-          {{ link_text }}
-        {% endif %}
-        {% if not loop.last %}
-          <br>
-        {% endif %}
-      {% endfor %}
-    </td>
-    {% endfor %}
   </tr>
   {% endfor %}
 {%- endmacro %}
