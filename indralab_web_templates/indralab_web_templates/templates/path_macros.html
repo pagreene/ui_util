@@ -1,0 +1,165 @@
+{% macro collapsible_path_card(path_list, card_header, card_id, table_headers=[], table_id=None) -%}
+  <div class="card" id="{{ card_id }}">
+    <div class="card-header">
+      <h4 class="my-0 font-weight-normal">
+        <a href="#"
+           class="stmt_toggle"
+           data-toggle="collapse"
+           aria-expanded="true"
+           data-target="#{{ card_id }}_body"
+           aria-controls="{{ card_id }}_body">
+          {{ card_header }}
+        </a>
+      </h4>
+    </div>
+    <div class="collapse" id="{{ card_id }}_body">
+      <div class="card-body">
+        {{ path_table(path_list, table_headers, table_id) }}
+      </div>
+    </div>
+  </div>
+{%- endmacro %}
+
+{% macro path_card(path_list, card_header, card_id, table_headers=[], table_id=None, merge=false) -%}
+  <div class="card" id="{{ card_id }}">
+    <div class="card-header">
+      <h4 class="my-0 font-weight-normal">{{ card_header }}</h4>
+    </div>
+    <div class="card-body">
+      {{ path_table(path_list, table_headers, table_id, merge) }}
+    </div>
+  </div>
+{%- endmacro %}
+
+{% macro path_table(path_list, headers=[], id=None, merge=false) -%}
+<table class="table">
+  {% if headers %}
+  <thead class="table-head">
+  {% for header in headers %}
+  {% if "Test" in headers %}
+    <th {% if header != "Test" and header != "Top Path" %}style="width: 15%; text-align: center"{% endif %}>{{ header }}</th>
+  {% else %}
+    <th>{{ header }}</th>
+  {% endif %}
+  {% endfor %}
+  </thead>
+  {% endif %}
+  <tbody class="table-body" {% if id %}id="{{ id }}"{% endif %}>
+    {{ path_table_contents(path_list, merge) }}
+  </tbody>
+</table>
+{%- endmacro %}
+
+{% macro path_table_contents(paths, merge=false) -%}
+  {% for row in paths %}
+  <tr>
+  {% for link_address, link_text in row %}
+    {# Pass: <i class="fas fa-check"></i>#}
+    {# Fail: <i class="fas fa-times"></i>#}
+    {# See more at:#}
+    {# https://fontawesome.com/icons?d=gallery#}
+    {% if link_text == 'Pass' %}
+      <td style="text-align: center">
+        <a href="{{ link_address }}" title="See detailed paths for this test" target="_blank">
+          <i class="fas fa-check"></i>
+        </a>
+      </td>
+    {% elif link_text == 'Fail' %}
+      <td style="text-align: center">
+        <a href="{{ link_address }}" title="See detailed paths for this test" target="_blank">
+          <i class="fas fa-times"></i>
+        </a>
+      </td>
+    {% elif link_address %}
+      <td><a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a></td>
+    {% else %}
+      {% if merge and loop.length == 1%} 
+        <td colspan="2" style="text-align:center; font-weight: bold;">{{ link_text }}</td>
+      {% else %}
+        <td>{{ link_text }}</td>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+  </tr>
+  {% endfor %}
+{%- endmacro %}
+
+{# Structure of path_list:
+For passing test
+path_list = [{"path": "A-X1-X2-B",
+              "edge_list": [{
+                  "edge": "A-X1",
+                  "stmts": [(href1, "A activates X1"),
+                            (href2, "A phosphorylates X1")]
+                  },
+                  {"edge": "X1-X2",
+                   "stmts": [(href1, "X1 deactivates X2"),
+                             (href2, "X1 inhibits X2")]
+                   },
+                  {"edge": "X2-X3",
+                   "stmts": [(href1, "X2 inhibits B"),
+                             (href2, "X2 deactivates B")]
+                   }]
+               },
+              {"path": "A-Y1-Y2-B",
+               "edge_list": [{ ... }]
+             ]
+
+For failing test, it's just an error message e.g.: "No paths found"
+#}
+{% macro detailed_paths(path_list, card_header, model, model_type, formatted_names, test_status='Fail', card_id=None, table_id=None) -%}
+  <div class="card" {% if card_id %}id="{{ card_id }}"{% endif %}>
+    <div class="card-header">
+      <h4 class="my-0 font-weight-normal">Test: "
+      {% if card_header|length == 2 %}
+        {% set href, text = card_header %}
+        <a href="{{ href }}" class="stmt-dblink" target="_blank">{{ text }}</a>
+      {% else %}
+        {{ card_header }}
+      {% endif %}
+      " for {{ model|upper }} ({{ formatted_names[model_type] }})</h4>
+    </div>
+    <div class="card-body">
+      {% if test_status|lower == 'pass' and path_list is not string %}
+        {{ detailed_paths_table_contents(path_list, table_id) }}
+      {% else %}
+        {{ failing_test_card_body(path_list, test_status) }}
+      {% endif %}
+    </div>
+  </div>
+{%- endmacro %}
+
+{% macro detailed_paths_table_contents(path_list, id) -%}
+  <table class="table">
+    <thead class="table-head">
+      <tr>
+        <th>Path</th>
+        <th>Support</th>
+      </tr>
+    </thead>
+    <tbody class="table-body" {% if id %}id="{{ id }}"{% endif %}>
+      {% for path_dict in path_list %}
+      <tr>
+        <td>{{ path_dict.path }}</td>
+        <td>
+          {% for edge_dict in path_dict.edge_list %}
+            <b>{{ edge_dict.edge }}</b><br>
+            {% for link_address, link_text in edge_dict.stmts %}
+              <a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a><br>
+            {% endfor %}
+          {% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{%- endmacro %}
+
+{% macro failing_test_card_body(msg, status) -%}
+  {% if status|lower == 'fail' %}
+    <p>The test failed with the following code: {{ msg }}</p>
+  {% else %}
+    <p>The test passed, but can't be shown because of the following condition: {{ msg }}</p>
+  {% endif %}
+  <p>To see more information about tests, see the <a href="https://emmaa.readthedocs.io/en/latest/dashboard/response_codes.html">documentation</a>.</p>
+{%- endmacro %}
