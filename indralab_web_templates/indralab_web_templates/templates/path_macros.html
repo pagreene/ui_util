@@ -120,10 +120,10 @@ For failing test, it's just an error message e.g.: "No paths found"
       " for {{ model|upper }} ({{ formatted_names[model_type] }})</h4>
     </div>
     <div class="card-body">
-      {% if test_status|lower == 'pass' %}
+      {% if test_status|lower == 'pass' and path_list is not string %}
         {{ detailed_paths_table_contents(path_list, table_id) }}
       {% else %}
-        {{ failing_test_card_body(path_list) }}
+        {{ failing_test_card_body(path_list, test_status) }}
       {% endif %}
     </div>
   </div>
@@ -155,7 +155,11 @@ For failing test, it's just an error message e.g.: "No paths found"
   </table>
 {%- endmacro %}
 
-{% macro failing_test_card_body(msg) -%}
-  <p>The test failed with the following code: {{ msg }}</p>
+{% macro failing_test_card_body(msg, status) -%}
+  {% if status|lower == 'fail' %}
+    <p>The test failed with the following code: {{ msg }}</p>
+  {% else %}
+    <p>The test passed, but can't be shown because of the following condition: {{ msg }}</p>
+  {% endif %}
   <p>To see more information about tests, see the <a href="https://emmaa.readthedocs.io/en/latest/dashboard/response_codes.html">documentation</a>.</p>
 {%- endmacro %}
