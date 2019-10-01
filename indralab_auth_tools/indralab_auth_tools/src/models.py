@@ -15,9 +15,13 @@ from sqlalchemy.exc import IntegrityError
 
 from indralab_auth_tools.src.database import Base
 
-engine = create_engine(os.environ['INDRALAB_USERS_DB'])
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
+try:
+    engine = create_engine(os.environ['INDRALAB_USERS_DB'])
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+except KeyError:
+    logger.warning("Could not get a session with the database, "
+                   "missing environment variable INDRALAB_USERS_DB")
 
 
 class UserDatabaseError(Exception):
