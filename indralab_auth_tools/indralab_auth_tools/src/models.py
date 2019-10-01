@@ -1,5 +1,6 @@
 import os
 import scrypt
+import logging
 from base64 import b64encode
 from datetime import datetime
 from time import sleep
@@ -13,15 +14,12 @@ from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.exc import IntegrityError
 
 
-from indralab_auth_tools.src.database import Base
+from indralab_auth_tools.src.database import Base, engine 
 
-try:
-    engine = create_engine(os.environ['INDRALAB_USERS_DB'])
-    DBSession = sessionmaker(bind=engine)
-    session = DBSession()
-except KeyError:
-    logger.warning("Could not get a session with the database, "
-                   "missing environment variable INDRALAB_USERS_DB")
+logger = logging.getLogger(__name__)
+
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
 
 
 class UserDatabaseError(Exception):
