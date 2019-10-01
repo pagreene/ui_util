@@ -57,7 +57,7 @@
 {% macro path_table_contents(paths, merge=false) -%}
   {% for row in paths %}
   <tr>
-  {% for link_address, link_text in row %}
+  {% for link_address, link_text, evid_text in row %}
     {# Pass: <i class="fas fa-check"></i>#}
     {# Fail: <i class="fas fa-times"></i>#}
     {# See more at:#}
@@ -75,7 +75,11 @@
         </a>
       </td>
     {% elif link_address %}
-      <td><a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a></td>
+      {% if evid_text %}
+        <td><a href="{{ link_address }}" class="stmt-dblink" title=evid_text, target="_blank">{{ link_text }}</a></td>
+      {% else %}
+        <td><a href="{{ link_address }}" class="stmt-dblink" title="Click to see the evidence for this statement"target="_blank">{{ link_text }}</a></td>
+      {% endif %}
     {% else %}
       {% if merge and loop.length == 1%} 
         <td colspan="2" style="text-align:center; font-weight: bold;">{{ link_text }}</td>
@@ -148,8 +152,12 @@ For failing test, it's just an error message e.g.: "No paths found"
         <td>
           {% for edge_dict in path_dict.edge_list %}
             <b>{{ edge_dict.edge }}</b><br>
-            {% for link_address, link_text in edge_dict.stmts %}
-              <a href="{{ link_address }}" class="stmt-dblink" target="_blank">{{ link_text }}</a><br>
+            {% for link_address, link_text, evid_text in edge_dict.stmts %}
+              {% if evid_text %}
+                <a href="{{ link_address }}" class="stmt-dblink" title=evid_text, target="_blank">{{ link_text }}</a><br>
+              {% else %}
+                <a href="{{ link_address }}" class="stmt-dblink" title="Click to see the evidence for this statement"target="_blank">{{ link_text }}</a><br>
+              {% endif %}
             {% endfor %}
           {% endfor %}
         </td>
