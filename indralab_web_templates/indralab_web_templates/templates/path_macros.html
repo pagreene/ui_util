@@ -64,28 +64,30 @@
     {# https://fontawesome.com/icons?d=gallery#}
     {% if link_text == 'Pass' %}
       <td style="text-align: center">
-        <a href="{{ link_address }}" title="See detailed paths for this test" target="_blank">
+        <a href="{{ link_address }}" title="{{ evid_text }}" target="_blank">
           <i class="fas fa-check"></i>
         </a>
       </td>
     {% elif link_text == 'Fail' %}
       <td style="text-align: center">
-        <a href="{{ link_address }}" title="See detailed paths for this test" target="_blank">
+        <a href="{{ link_address }}" title="{{ evid_text }}" target="_blank">
           <i class="fas fa-times"></i>
         </a>
       </td>
-    {% elif link_address %}
-      {% if evid_text %}
-        <td><a href="{{ link_address }}" class="stmt-dblink" title=evid_text, target="_blank">{{ link_text }}</a></td>
-      {% else %}
-        <td><a href="{{ link_address }}" class="stmt-dblink" title="Click to see the evidence for this statement"target="_blank">{{ link_text }}</a></td>
-      {% endif %}
-    {% else %}
-      {% if merge and loop.length == 1%} 
+    {% elif merge and loop.length == 1%}
         <td colspan="2" style="text-align:center; font-weight: bold;">{{ link_text }}</td>
-      {% else %}
-        <td>{{ link_text }}</td>
+    {% else %}
+      <td>
+      {% if link_address and evid_text %}
+        <a href="{{ link_address }}" class="stmt-dblink" title="{{ evid_text }}" target="_blank">{{ link_text }}</a>
+      {% elif link_address and not evid_text %}
+        <a href="{{ link_address }}" class="stmt-dblink" title="Click to see the evidence for this statement" target="_blank">{{ link_text }}</a>
+      {% elif not link_address and evid_text %}
+        <span title="{{ evid_text }}">{{ link_text }}</span>
+      {% elif not link_address and not evid_text %}
+        {{ link_text }}
       {% endif %}
+      </td>
     {% endif %}
   {% endfor %}
   </tr>
@@ -153,10 +155,14 @@ For failing test, it's just an error message e.g.: "No paths found"
           {% for edge_dict in path_dict.edge_list %}
             <b>{{ edge_dict.edge }}</b><br>
             {% for link_address, link_text, evid_text in edge_dict.stmts %}
-              {% if evid_text %}
-                <a href="{{ link_address }}" class="stmt-dblink" title=evid_text, target="_blank">{{ link_text }}</a><br>
-              {% else %}
-                <a href="{{ link_address }}" class="stmt-dblink" title="Click to see the evidence for this statement"target="_blank">{{ link_text }}</a><br>
+              {% if link_address and evid_text %}
+                <a href="{{ link_address }}" class="stmt-dblink" title="{{ evid_text }}" target="_blank">{{ link_text }}</a><br>
+              {% elif link_address and not evid_text %}
+                <a href="{{ link_address }}" class="stmt-dblink" title="Click to see the evidence for this statement" target="_blank">{{ link_text }}</a><br>
+              {% elif not link_address and evid_text %}
+                <span title="{{ evid_text }}">{{ link_text }}</span><br>
+              {% elif not link_address and not evid_text %}
+                {{ link_text }}<br>
               {% endif %}
             {% endfor %}
           {% endfor %}
