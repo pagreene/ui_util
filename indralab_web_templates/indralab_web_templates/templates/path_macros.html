@@ -32,22 +32,26 @@
 {%- endmacro %}
 
 {% macro path_table(path_list, headers=[], id=None, merge=false) -%}
-<table class="table">
-  {% if headers %}
-  <thead class="table-head">
-  {% for header in headers %}
-  {% if "Test" in headers %}
-    <th {% if header != "Test" and header != "Top Path" %}style="width: 15%; text-align: center"{% endif %}>{{ header }}</th>
-  {% else %}
-    <th>{{ header }}</th>
-  {% endif %}
-  {% endfor %}
-  </thead>
-  {% endif %}
-  <tbody class="table-body" {% if id %}id="{{ id }}"{% endif %}>
-    {{ path_table_contents(path_list, merge) }}
-  </tbody>
-</table>
+{% if path_list is string %}
+  <p>{{ path_list }}</p>
+{% else %}
+  <table class="table">
+    {% if headers %}
+    <thead class="table-head">
+    {% for header in headers %}
+    {% if "Test" in headers %}
+      <th {% if header != "Test" and header != "Top Path" %}style="width: 15%; text-align: center"{% endif %}>{{ header }}</th>
+    {% else %}
+      <th>{{ header }}</th>
+    {% endif %}
+    {% endfor %}
+    </thead>
+    {% endif %}
+    <tbody class="table-body" {% if id %}id="{{ id }}"{% endif %}>
+      {{ path_table_contents(path_list, merge) }}
+    </tbody>
+  </table>
+{% endif %}
 {%- endmacro %}
 
 {% macro path_table_contents(paths, merge=false) -%}
