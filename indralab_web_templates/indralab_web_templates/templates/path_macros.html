@@ -124,6 +124,9 @@ For failing test, it's just an error message e.g.: "No paths found"
       {% if card_header|length == 2 %}
         {% set href, text = card_header %}
         <a href="{{ href }}" class="stmt-dblink" target="_blank">{{ text }}</a>
+      {% elif card_header|length == 3 %}
+        {% set href, text, title = card_header %}
+        <a href="{{ href }}" title="{{ title }}" class="stmt-dblink" target="_blank">{{ text }}</a>
       {% else %}
         {{ card_header }}
       {% endif %}
