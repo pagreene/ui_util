@@ -157,7 +157,15 @@ For failing test, it's just an error message e.g.: "No paths found"
         <td>
           {% for edge_dict in path_dict.edge_list %}
             <b>{{ edge_dict.edge }}</b><br>
-            {% for link_address, link_text, evid_text in edge_dict.stmts %}
+            {% for stmt_item in edge_dict.stmts %}
+              {# This if else block makes the transition from old to new json structures
+                 for detailed test results smoother #}
+              {% if stmt_item|length == 2 %}
+                {% set link_address, link_text = stmt_item %}
+                {% set evid_text = "" %}
+              {% elif stmt_item|length == 3 %}
+                {% set link_address, link_text, evid_text = stmt_item %}
+              {% endif %}
               {% if link_address and evid_text %}
                 <a href="{{ link_address }}" class="stmt-dblink" title="{{ evid_text }}" target="_blank">{{ link_text }}</a><br>
               {% elif link_address and not evid_text %}
