@@ -194,8 +194,10 @@ For failing test, it's just an error message e.g.: "No paths found"
 {% macro failing_test_card_body(msg, status) -%}
   {% if status|lower == 'fail' %}
     <p>The test failed with the following code: {{ msg }}</p>
-  {% else %}
+  {% elif status|lower == 'pass' %}
     <p>The test passed, but can't be shown because of the following condition: {{ msg }}</p>
+  {% elif status|lower == 'n_a' %}
+    <p>The test is not applicable for the current model or model type ({{ msg }})</p>
   {% endif %}
   <p>To see more information about tests, see the <a href="https://emmaa.readthedocs.io/en/latest/dashboard/response_codes.html">documentation</a>.</p>
 {%- endmacro %}
