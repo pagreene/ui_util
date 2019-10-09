@@ -60,6 +60,7 @@
   {% for link_address, link_text, evid_text in row %}
     {# Pass: <i class="fas fa-check"></i>#}
     {# Fail: <i class="fas fa-times"></i>#}
+    {# Not Applicable: <i class="fas fa-ban"></i> #}
     {# See more at:#}
     {# https://fontawesome.com/icons?d=gallery#}
     {% if link_text == 'Pass' %}
@@ -74,8 +75,14 @@
           <i class="fas fa-times"></i>
         </a>
       </td>
-    {% elif merge and loop.length == 1%}
-        <td colspan="2" style="text-align:center; font-weight: bold;">{{ link_text }}</td>
+    {% elif link_text == 'n_a' %}
+      <td style="text-align: center">
+        <a href="{{ link_address }}" title="{{ evid_text }}" target="_blank">
+          <i class="fas fa-ban"></i>
+        </a>
+      </td>
+    {% elif merge and loop.length == 1 %}
+      <td colspan="2" style="text-align:center; font-weight: bold;">{{ link_text }}</td>
     {% else %}
       <td>
       {% if link_address and evid_text %}
