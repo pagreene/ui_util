@@ -39,10 +39,10 @@
     {% if headers %}
     <thead class="table-head">
     {% for header in headers %}
-    {% if "Test" in headers %}
-      <th {% if header != "Test" and header != "Top Path" %}style="width: 15%; text-align: center"{% endif %}>{{ header }}</th>
+    {% if "Test" in headers or "Query" in headers %}
+      <th {% if header not in ["Test", "Top Path", "Query", "Model"] %}style="width: 15%; text-align: center"{% endif %}>{{ header }}</th>
     {% else %}
-      <th>{{ header }}</th>
+      <th style="text-align: center">{{ header }}</th>
     {% endif %}
     {% endfor %}
     </thead>
@@ -60,7 +60,7 @@
   {% for link_address, link_text, evid_text in row %}
     {# Pass: <i class="fas fa-check"></i>#}
     {# Fail: <i class="fas fa-times"></i>#}
-    {# Not Applicable: <i class="fas fa-ban"></i> #}
+    {# N/A: <i class="fas fa-ban"></i> #}
     {# See more at:#}
     {# https://fontawesome.com/icons?d=gallery#}
     {% if link_text == 'Pass' %}
