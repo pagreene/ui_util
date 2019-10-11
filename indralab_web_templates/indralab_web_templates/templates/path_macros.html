@@ -124,10 +124,15 @@ path_list = [{"path": "A-X1-X2-B",
 
 For failing test, it's just an error message e.g.: "No paths found"
 #}
-{% macro detailed_paths(path_list, card_header, model, model_type, formatted_names, test_status='Fail', card_id=None, table_id=None) -%}
+{% macro detailed_paths(path_list, card_header, model, model_type, formatted_names, test_status='Fail', card_id=None, table_id=None, is_query_page=false) -%}
   <div class="card" {% if card_id %}id="{{ card_id }}"{% endif %}>
     <div class="card-header">
-      <h4 class="my-0 font-weight-normal">Test: "
+      <h4 class="my-0 font-weight-normal">
+      {% if is_query_page %}
+        Query
+      {% else %}
+        Test
+      {% endif %}: "
       {% if card_header|length == 2 %}
         {% set href, text = card_header %}
         <a href="{{ href }}" class="stmt-dblink" target="_blank">{{ text }}</a>
@@ -198,6 +203,8 @@ For failing test, it's just an error message e.g.: "No paths found"
     <p>The test passed, but can't be shown because of the following condition: {{ msg }}</p>
   {% elif status|lower == 'n_a' %}
     <p>The test is not applicable for the current model or model type ({{ msg }})</p>
+  {% elif status|lower == 'query' %}
+    <p>The query does not have a stashed result. (query hash: {{ msg }})</p>
   {% endif %}
   <p>To see more information about tests, see the <a href="https://emmaa.readthedocs.io/en/latest/dashboard/response_codes.html">documentation</a>.</p>
 {%- endmacro %}
