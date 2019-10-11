@@ -39,10 +39,10 @@
     {% if headers %}
     <thead class="table-head">
     {% for header in headers %}
-    {% if "Test" in headers %}
-      <th {% if header != "Test" and header != "Top Path" %}style="width: 15%; text-align: center"{% endif %}>{{ header }}</th>
+    {% if "Test" in headers or "Query" in headers %}
+      <th {% if header not in ["Test", "Top Path", "Query", "Model"] %}style="width: 15%; text-align: center"{% endif %}>{{ header }}</th>
     {% else %}
-      <th>{{ header }}</th>
+      <th style="text-align: center">{{ header }}</th>
     {% endif %}
     {% endfor %}
     </thead>
@@ -60,6 +60,7 @@
   {% for link_address, link_text, evid_text in row %}
     {# Pass: <i class="fas fa-check"></i>#}
     {# Fail: <i class="fas fa-times"></i>#}
+    {# N/A: <i class="fas fa-ban"></i> #}
     {# See more at:#}
     {# https://fontawesome.com/icons?d=gallery#}
     {% if link_text == 'Pass' %}
@@ -74,8 +75,14 @@
           <i class="fas fa-times"></i>
         </a>
       </td>
-    {% elif merge and loop.length == 1%}
-        <td colspan="2" style="text-align:center; font-weight: bold;">{{ link_text }}</td>
+    {% elif link_text == 'n_a' %}
+      <td style="text-align: center">
+        <a href="{{ link_address }}" title="{{ evid_text }}" target="_blank">
+          <i class="fas fa-ban"></i>
+        </a>
+      </td>
+    {% elif merge and loop.length == 1 %}
+      <td colspan="2" style="text-align:center; font-weight: bold;">{{ link_text }}</td>
     {% else %}
       <td>
       {% if link_address and evid_text %}
@@ -117,10 +124,15 @@ path_list = [{"path": "A-X1-X2-B",
 
 For failing test, it's just an error message e.g.: "No paths found"
 #}
-{% macro detailed_paths(path_list, card_header, model, model_type, formatted_names, test_status='Fail', card_id=None, table_id=None) -%}
+{% macro detailed_paths(path_list, card_header, model, model_type, formatted_names, test_status='Fail', card_id=None, table_id=None, is_query_page=false) -%}
   <div class="card" {% if card_id %}id="{{ card_id }}"{% endif %}>
     <div class="card-header">
-      <h4 class="my-0 font-weight-normal">Test: "
+      <h4 class="my-0 font-weight-normal">
+      {% if is_query_page %}
+        Query
+      {% else %}
+        Test
+      {% endif %}: "
       {% if card_header|length == 2 %}
         {% set href, text = card_header %}
         <a href="{{ href }}" class="stmt-dblink" target="_blank">{{ text }}</a>
@@ -136,7 +148,7 @@ For failing test, it's just an error message e.g.: "No paths found"
       {% if test_status|lower == 'pass' and path_list is not string %}
         {{ detailed_paths_table_contents(path_list, table_id) }}
       {% else %}
-        {{ failing_test_card_body(path_list, test_status) }}
+        {{ failing_test_card_body(path_list, test_status, is_query_page) }}
       {% endif %}
     </div>
   </div>
@@ -184,11 +196,20 @@ For failing test, it's just an error message e.g.: "No paths found"
   </table>
 {%- endmacro %}
 
-{% macro failing_test_card_body(msg, status) -%}
-  {% if status|lower == 'fail' %}
-    <p>The test failed with the following code: {{ msg }}</p>
+{% macro failing_test_card_body(msg, status, is_query_page) -%}
+  {% if is_query_page %}
+    {% set st = 'query' %}
   {% else %}
-    <p>The test passed, but can't be shown because of the following condition: {{ msg }}</p>
+    {% set st = 'test' %}
+  {% endif %}
+  {% if status|lower == 'fail' %}
+    <p>The {{ st }} failed with the following code: {{ msg }}</p>
+  {% elif status|lower == 'pass' %}
+    <p>The {{ st }} passed, but can't be shown because of the following condition: {{ msg }}</p>
+  {% elif status|lower == 'n_a' %}
+    <p>The {{ st }} is not applicable for the current model or model type ({{ msg }})</p>
+  {% elif status|lower == 'query' %}
+    <p>The {{ st }} does not have a stashed result. ({{ msg }})</p>
   {% endif %}
   <p>To see more information about tests, see the <a href="https://emmaa.readthedocs.io/en/latest/dashboard/response_codes.html">documentation</a>.</p>
 {%- endmacro %}
