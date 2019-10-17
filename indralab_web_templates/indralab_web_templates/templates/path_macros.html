@@ -127,22 +127,9 @@ For failing test, it's just an error message e.g.: "No paths found"
 {% macro detailed_paths(path_list, card_header, model, model_type, formatted_names, test_status='Fail', card_id=None, table_id=None, is_query_page=false) -%}
   <div class="card" {% if card_id %}id="{{ card_id }}"{% endif %}>
     <div class="card-header">
-      <h4 class="my-0 font-weight-normal">
-      {% if is_query_page %}
-        Query
-      {% else %}
-        Test
-      {% endif %}: "
-      {% if card_header|length == 2 %}
-        {% set href, text = card_header %}
-        <a href="{{ href }}" class="stmt-dblink" target="_blank">{{ text }}</a>
-      {% elif card_header|length == 3 %}
-        {% set href, text, title = card_header %}
-        <a href="{{ href }}" title="{{ title }}" class="stmt-dblink" target="_blank">{{ text }}</a>
-      {% else %}
-        {{ card_header }}
-      {% endif %}
-      " for {{ model|upper }} ({{ formatted_names[model_type] }})</h4>
+      <h4 class="my-0 font-weight-normal">{% if is_query_page %}Query{% else %}Test{% endif %}: "{% if card_header|length == 2 %}{% set href, text = card_header %}
+        <a href="{{ href }}" class="stmt-dblink" target="_blank">{{ text }}</a>{% elif card_header|length == 3 %}{% set href, text, title = card_header %}<a href="{{ href }}" title="{{ title }}" class="stmt-dblink" target="_blank">{{ text }}</a>{% else %}{{ card_header }}{% endif %}" for {{ model|upper }} ({{ formatted_names[model_type] }})
+      </h4>
     </div>
     <div class="card-body">
       {% if test_status|lower == 'pass' and path_list is not string %}
