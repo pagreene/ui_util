@@ -85,7 +85,9 @@
       <td colspan="2" style="text-align:center; font-weight: bold;">{{ link_text }}</td>
     {% else %}
       <td>
-      {% if link_address and evid_text %}
+      {% if not link_text %}
+        <img src="{{ link_address }}"/>
+      {% elif link_address and evid_text %}
         <a href="{{ link_address }}" class="stmt-dblink" title="{{ evid_text }}" target="_blank">{{ link_text }}</a>
       {% elif link_address and not evid_text %}
         <a href="{{ link_address }}" class="stmt-dblink" title="Click to see the evidence for this statement" target="_blank">{{ link_text }}</a>
