@@ -57,7 +57,9 @@
 {% macro path_table_contents(paths, merge=false) -%}
   {% for row in paths %}
   <tr>
-  {% for link_address, link_text, evid_text in row %}
+  {% for row_el in row %}
+  {% if row_el|length == 3 %}
+    {% set link_address, link_text, evid_text = row_el %}
     {# Pass: <i class="fas fa-check"></i>#}
     {# Fail: <i class="fas fa-times"></i>#}
     {# N/A: <i class="fas fa-ban"></i> #}
@@ -98,6 +100,17 @@
       {% endif %}
       </td>
     {% endif %}
+  {% elif row_el|length == 4 %}
+    {% set sh, stmt, num_evid, num_cur = row_el %}
+    <td>
+      <statement english="{{ stmt }}"
+                  hash="{{ sh }}"
+                  :evidence="[]"
+                  :loadable="true"
+                  :total_evidence="{{ num_evid }}"
+                  :num_curations="{{ num_cur }}"></statement>
+    </td>
+  {% endif %}
   {% endfor %}
   </tr>
   {% endfor %}
