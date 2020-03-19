@@ -100,16 +100,17 @@
       {% endif %}
       </td>
     {% endif %}
-  {% elif row_el|length == 4 %}
-    {% set sh, stmt, num_evid, num_cur = row_el %}
+  {% elif row_el|length == 5 %}
+    {% set sh, stmt, evid, num_evid, num_cur = row_el %}
     <td>
       <statement english="{{ stmt }}"
                   hash="{{ sh }}"
-                  :evidence="[]"
+                  :evidence="{{ evid }}"
                   :loadable="true"
                   :total_evidence="{{ num_evid }}"
                   :num_curations="{{ num_cur }}"
-                  url="{{ url }}"></statement>
+                  url="{{ url }}"
+                  :init_expanded="true"></statement>
     </td>
   {% endif %}
   {% endfor %}
