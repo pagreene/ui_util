@@ -100,6 +100,16 @@
       {% endif %}
       </td>
     {% endif %}
+  {% elif row_el|length == 4 %}
+    <td>
+    {% set link_address, link_text, evid_text, cur = row_el %}
+    {% if cur == 'correct' %}
+    <span  style="color: green;">&#9998;</span>
+    {% elif cur == 'incorrect' %}
+    <span  style="color: red;">&#9998;</span>
+    {% endif %}
+    <a href="{{ link_address }}" class="stmt-dblink" title="{{ evid_text }}" target="_blank">{{ link_text }}</a>
+    </td>  
   {% elif row_el|length == 5 %}
     {% set sh, stmt, evid, num_evid, num_cur = row_el %}
     <td>
@@ -176,13 +186,11 @@ For failing test, it's just an error message e.g.: "No paths found"
           {% for edge_dict in path_dict.edge_list %}
             <b>{{ edge_dict.edge }}</b><br>
             {% for stmt_item in edge_dict.stmts %}
-              {# This if else block makes the transition from old to new json structures
-                 for detailed test results smoother #}
-              {% if stmt_item|length == 2 %}
-                {% set link_address, link_text = stmt_item %}
-                {% set evid_text = "" %}
-              {% elif stmt_item|length == 3 %}
-                {% set link_address, link_text, evid_text = stmt_item %}
+              {% set link_address, link_text, evid_text, cur = stmt_item %}
+              {% if cur == 'correct' %}
+                <span  style="color: green;">&#9998;</span>
+              {% elif cur == 'incorrect' %}
+                <span  style="color: red;">&#9998;</span>
               {% endif %}
               {% if link_address and evid_text %}
                 <a href="{{ link_address }}" class="stmt-dblink" title="{{ evid_text }}" target="_blank">{{ link_text }}</a><br>
