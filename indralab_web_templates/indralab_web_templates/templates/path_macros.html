@@ -116,6 +116,11 @@
     </td>  
   {% elif row_el|length == 5 %}
     {% set sh, stmt, evid, num_evid, num_cur = row_el %}
+    {% if evid %}
+    {% set expand="true" %}
+    {% else %}
+    {% set expand="false" %}
+    {% endif %}
     <td>
       <statement english="{{ stmt }}"
                   hash="{{ sh }}"
@@ -124,7 +129,7 @@
                   :total_evidence="{{ num_evid }}"
                   :num_curations="{{ num_cur }}"
                   url="{{ url }}"
-                  :init_expanded="true"></statement>
+                  :init_expanded="{{ expand }}"></statement>
     </td>
   {% endif %}
   {% endfor %}
