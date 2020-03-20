@@ -108,9 +108,9 @@
     <td>
     {% set link_address, link_text, evid_text, cur = row_el %}
     {% if cur == 'correct' %}
-    <span  style="color: green;">&#9998;</span>
+    <span  style="color: green;" title="Curated as correct">&#9998;</span>
     {% elif cur == 'incorrect' %}
-    <span  style="color: red;">&#9998;</span>
+    <span  style="color: red;" title="Curated as incorrect">&#9998;</span>
     {% endif %}
     <a href="{{ link_address }}" class="stmt-dblink" title="{{ evid_text }}" target="_blank">{{ link_text }}</a>
     </td>  
@@ -197,9 +197,9 @@ For failing test, it's just an error message e.g.: "No paths found"
             {% for stmt_item in edge_dict.stmts %}
               {% set link_address, link_text, evid_text, cur = stmt_item %}
               {% if cur == 'correct' %}
-                <span  style="color: green;">&#9998;</span>
+                <span  style="color: green;"  title="Curated as correct">&#9998;</span>
               {% elif cur == 'incorrect' %}
-                <span  style="color: red;">&#9998;</span>
+                <span  style="color: red;"  title="Curated as incorrect">&#9998;</span>
               {% endif %}
               {% if link_address and evid_text %}
                 <a href="{{ link_address }}" class="stmt-dblink" title="{{ evid_text }}" target="_blank">{{ link_text }}</a><br>
