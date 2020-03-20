@@ -20,10 +20,14 @@
   </div>
 {%- endmacro %}
 
-{% macro path_card(path_list, card_header, card_id, table_headers=[], table_id=None, merge=false, url=None) -%}
+{% macro path_card(path_list, card_header, card_id, table_headers=[], table_id=None, merge=false, url=None, show_all=False) -%}
   <div class="card" id="{{ card_id }}">
     <div class="card-header">
+      {% if show_all %}
+      <h4 class="my-0 font-weight-normal">{{ card_header }}<button class="btn btn-outline-secondary" onClick="redirectToAllStmts('{{ model }}')" style="position: absolute; right: 10px;" type="button">View All Statements</button></h4>
+      {% else %}
       <h4 class="my-0 font-weight-normal">{{ card_header }}</h4>
+      {% endif %}
     </div>
     <div class="card-body">
       {{ path_table(path_list, table_headers, table_id, merge, url) }}
@@ -155,7 +159,7 @@ For failing test, it's just an error message e.g.: "No paths found"
   <div class="card" {% if card_id %}id="{{ card_id }}"{% endif %}>
     <div class="card-header">
       <button class="btn btn-outline-secondary" {% if not prev %} disabled {% endif %} onClick="redirectOneStep('{{ prev }}', '{{ is_query_page }}')" type="button">❮ Previous</button>
-      <button class="btn btn-outline-secondary" {% if not next %} disabled {% endif %}onClick="redirectOneStep('{{ next }}', '{{ is_query_page }}')" type="button">Next ❯</button>
+      <button class="btn btn-outline-secondary" {% if not next %} disabled {% endif %} onClick="redirectOneStep('{{ next }}', '{{ is_query_page }}')" type="button">Next ❯</button>
       <h4 class="my-0 font-weight-normal">
         {% if is_query_page %}Query{% else %}Test{% endif %}: "{% if card_header|length == 2 %}{% set href, text = card_header %}<a href="{{ href }}" class="stmt-dblink" target="_blank">{{ text }}</a>{% elif card_header|length == 3 %}{% set href, text, title = card_header %}<a href="{{ href }}" title="{{ title }}" class="stmt-dblink" target="_blank">{{ text }}</a>{% else %}{{ card_header }}{% endif %}" for {{ model|upper }} ({{ formatted_names[model_type] }}) on {{ date }}
       </h4> 
