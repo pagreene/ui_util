@@ -20,18 +20,22 @@
   </div>
 {%- endmacro %}
 
-{% macro path_card(path_list, card_header, card_id, table_headers=[], table_id=None, merge=false) -%}
+{% macro path_card(path_list, card_header, card_id, table_headers=[], table_id=None, merge=false, url=None, show_all=False) -%}
   <div class="card" id="{{ card_id }}">
     <div class="card-header">
+      {% if show_all %}
+      <h4 class="my-0 font-weight-normal">{{ card_header }}<button class="btn btn-outline-secondary" onClick="redirectToAllStmts('{{ model }}')" style="position: absolute; right: 10px; top: 1.1%" type="button">View All Statements</button></h4>
+      {% else %}
       <h4 class="my-0 font-weight-normal">{{ card_header }}</h4>
+      {% endif %}
     </div>
     <div class="card-body">
-      {{ path_table(path_list, table_headers, table_id, merge) }}
+      {{ path_table(path_list, table_headers, table_id, merge, url) }}
     </div>
   </div>
 {%- endmacro %}
 
-{% macro path_table(path_list, headers=[], id=None, merge=false) -%}
+{% macro path_table(path_list, headers=[], id=None, merge=false, url=None) -%}
 {% if path_list is string %}
   <p>{{ path_list }}</p>
 {% else %}
@@ -48,16 +52,18 @@
     </thead>
     {% endif %}
     <tbody class="table-body" {% if id %}id="{{ id }}"{% endif %}>
-      {{ path_table_contents(path_list, merge) }}
+      {{ path_table_contents(path_list, merge, url) }}
     </tbody>
   </table>
 {% endif %}
 {%- endmacro %}
 
-{% macro path_table_contents(paths, merge=false) -%}
+{% macro path_table_contents(paths, merge=false, url=None) -%}
   {% for row in paths %}
   <tr>
-  {% for link_address, link_text, evid_text in row %}
+  {% for row_el in row %}
+  {% if row_el|length == 3 %}
+    {% set link_address, link_text, evid_text = row_el %}
     {# Pass: <i class="fas fa-check"></i>#}
     {# Fail: <i class="fas fa-times"></i>#}
     {# N/A: <i class="fas fa-ban"></i> #}
@@ -98,6 +104,34 @@
       {% endif %}
       </td>
     {% endif %}
+  {% elif row_el|length == 4 %}
+    <td>
+    {% set link_address, link_text, evid_text, cur = row_el %}
+    {% if cur == 'correct' %}
+    <span  style="color: green;" title="Curated as correct">&#9998;</span>
+    {% elif cur == 'incorrect' %}
+    <span  style="color: red;" title="Curated as incorrect">&#9998;</span>
+    {% endif %}
+    <a href="{{ link_address }}" class="stmt-dblink" title="{{ evid_text }}" target="_blank">{{ link_text }}</a>
+    </td>  
+  {% elif row_el|length == 5 %}
+    {% set sh, stmt, evid, num_evid, num_cur = row_el %}
+    {% if evid %}
+    {% set expand="true" %}
+    {% else %}
+    {% set expand="false" %}
+    {% endif %}
+    <td>
+      <statement english="{{ stmt }}"
+                  hash="{{ sh }}"
+                  :evidence="{{ evid }}"
+                  :loadable="true"
+                  :total_evidence="{{ num_evid }}"
+                  :num_curations="{{ num_cur }}"
+                  url="{{ url }}"
+                  :init_expanded="{{ expand }}"></statement>
+    </td>
+  {% endif %}
   {% endfor %}
   </tr>
   {% endfor %}
@@ -130,7 +164,7 @@ For failing test, it's just an error message e.g.: "No paths found"
   <div class="card" {% if card_id %}id="{{ card_id }}"{% endif %}>
     <div class="card-header">
       <button class="btn btn-outline-secondary" {% if not prev %} disabled {% endif %} onClick="redirectOneStep('{{ prev }}', '{{ is_query_page }}')" type="button">❮ Previous</button>
-      <button class="btn btn-outline-secondary" {% if not next %} disabled {% endif %}onClick="redirectOneStep('{{ next }}', '{{ is_query_page }}')" type="button">Next ❯</button>
+      <button class="btn btn-outline-secondary" {% if not next %} disabled {% endif %} onClick="redirectOneStep('{{ next }}', '{{ is_query_page }}')" type="button">Next ❯</button>
       <h4 class="my-0 font-weight-normal">
         {% if is_query_page %}Query{% else %}Test{% endif %}: "{% if card_header|length == 2 %}{% set href, text = card_header %}<a href="{{ href }}" class="stmt-dblink" target="_blank">{{ text }}</a>{% elif card_header|length == 3 %}{% set href, text, title = card_header %}<a href="{{ href }}" title="{{ title }}" class="stmt-dblink" target="_blank">{{ text }}</a>{% else %}{{ card_header }}{% endif %}" for {{ model|upper }} ({{ formatted_names[model_type] }}) on {{ date }}
       </h4> 
@@ -161,13 +195,11 @@ For failing test, it's just an error message e.g.: "No paths found"
           {% for edge_dict in path_dict.edge_list %}
             <b>{{ edge_dict.edge }}</b><br>
             {% for stmt_item in edge_dict.stmts %}
-              {# This if else block makes the transition from old to new json structures
-                 for detailed test results smoother #}
-              {% if stmt_item|length == 2 %}
-                {% set link_address, link_text = stmt_item %}
-                {% set evid_text = "" %}
-              {% elif stmt_item|length == 3 %}
-                {% set link_address, link_text, evid_text = stmt_item %}
+              {% set link_address, link_text, evid_text, cur = stmt_item %}
+              {% if cur == 'correct' %}
+                <span  style="color: green;"  title="Curated as correct">&#9998;</span>
+              {% elif cur == 'incorrect' %}
+                <span  style="color: red;"  title="Curated as incorrect">&#9998;</span>
               {% endif %}
               {% if link_address and evid_text %}
                 <a href="{{ link_address }}" class="stmt-dblink" title="{{ evid_text }}" target="_blank">{{ link_text }}</a><br>
