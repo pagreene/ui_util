@@ -115,7 +115,7 @@
     <a href="{{ link_address }}" class="stmt-dblink" title="{{ evid_text }}" target="_blank">{{ link_text }}</a>
     </td>  
   {% elif row_el|length == 5 %}
-    {% set sh, stmt, evid, num_evid, num_cur = row_el %}
+    {% set sh, stmt, evid, num_evid, badges = row_el %}
     {% if evid %}
     {% set expand="true" %}
     {% else %}
@@ -127,9 +127,9 @@
                   :evidence="{{ evid }}"
                   :loadable="true"
                   :total_evidence="{{ num_evid }}"
-                  :num_curations="{{ num_cur }}"
                   url="{{ url }}"
-                  :init_expanded="{{ expand }}"></statement>
+                  :init_expanded="{{ expand }}"
+                  :badges="{{ badges }}"></statement>
     </td>
   {% endif %}
   {% endfor %}
