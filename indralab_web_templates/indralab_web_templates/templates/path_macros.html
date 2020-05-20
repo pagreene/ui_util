@@ -45,6 +45,8 @@
     {% for header in headers %}
     {% if "Test" in headers or "Query" in headers %}
       <th {% if header not in ["Test", "Top Path", "Query", "Model"] %}style="width: 15%; text-align: center"{% endif %}>{{ header }}</th>
+    {% elif header in ["Item"] %}
+      <th style="width: 30%; text-align: left">{{ header }}</th>
     {% else %}
       <th style="text-align: left;">{{ header }}</th>
     {% endif %}
