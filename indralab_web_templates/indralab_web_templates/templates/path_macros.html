@@ -173,7 +173,7 @@ For failing test, it's just an error message e.g.: "No paths found"
     </div>
     <div class="card-body">
       {% if test_status|lower == 'pass' and path_list is not string %}
-        {{ detailed_paths_table_contents(path_list, table_id) }}
+        {{ detailed_paths_table_contents(path_list, table_id, date) }}
       {% else %}
         {{ failing_test_card_body(path_list, test_status, is_query_page) }}
       {% endif %}
@@ -181,7 +181,7 @@ For failing test, it's just an error message e.g.: "No paths found"
   </div>
 {%- endmacro %}
 
-{% macro detailed_paths_table_contents(path_list, id) -%}
+{% macro detailed_paths_table_contents(path_list, id, date) -%}
   <table class="table">
     <thead class="table-head">
       <tr>
@@ -198,6 +198,9 @@ For failing test, it's just an error message e.g.: "No paths found"
             <b>{{ edge_dict.edge }}</b><br>
             {% for stmt_item in edge_dict.stmts %}
               {% set link_address, link_text, evid_text, cur = stmt_item %}
+              {% if date not in link_address %}
+                {% set link_address = link_address + '&date=' + date %}
+              {% endif %}
               {% if cur == 'correct' %}
                 <span  style="color: green;"  title="Curated as correct">&#9998;</span>
               {% elif cur == 'incorrect' %}
