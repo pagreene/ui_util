@@ -24,7 +24,7 @@
   <div class="card" id="{{ card_id }}">
     <div class="card-header">
       {% if show_all %}
-      <h4 class="my-0 font-weight-normal">{{ card_header }}<button class="btn btn-outline-secondary" onClick="redirectToAllStmts('{{ model }}')" style="position: absolute; right: 10px; top: 1.1%" type="button">View All Statements</button></h4>
+      <h4 class="my-0 font-weight-normal">{{ card_header }}<button class="btn btn-outline-secondary" onClick='window.open("{{ show_all }}", target="_blank")' style="position: absolute; right: 10px; top: 1.1%" type="button">View All Statements</button></h4>
       {% else %}
       <h4 class="my-0 font-weight-normal">{{ card_header }}</h4>
       {% endif %}
