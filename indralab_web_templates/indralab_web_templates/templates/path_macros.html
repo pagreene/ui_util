@@ -198,7 +198,7 @@ For failing test, it's just an error message e.g.: "No paths found"
             <b>{{ edge_dict.edge }}</b><br>
             {% for stmt_item in edge_dict.stmts %}
               {% set link_address, link_text, evid_text, cur = stmt_item %}
-              {% if date and date not in link_address %}
+              {% if date and link_address and 'date' not in link_address %}
                 {% set link_address = link_address + '&date=' + date %}
               {% endif %}
               {% if cur == 'correct' %}
