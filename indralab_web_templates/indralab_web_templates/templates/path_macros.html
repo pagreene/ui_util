@@ -192,7 +192,11 @@ For failing test, it's just an error message e.g.: "No paths found"
     <tbody class="table-body" {% if id %}id="{{ id }}"{% endif %}>
       {% for path_dict in path_list %}
       <tr>
-        <td>{{ path_dict.path }}</td>
+        {% if path_dict.path[0] == 'new' %}
+          <td>{{ path_dict.path[1] }} <span class="badge-pill" style="background-color: green; color: white"  title="new">New</span></td>
+        {% else %}
+          <td>{{ path_dict.path }}</td>
+        {% endif %}
         <td>
           {% for edge_dict in path_dict.edge_list %}
             <b>{{ edge_dict.edge }}</b><br>
