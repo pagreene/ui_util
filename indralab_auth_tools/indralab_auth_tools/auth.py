@@ -7,6 +7,7 @@ from http.cookies import SimpleCookie
 
 from flask_jwt_extended import jwt_optional, get_jwt_identity, \
     create_access_token, set_access_cookies, unset_jwt_cookies, JWTManager
+
 from flask import Blueprint, jsonify, request, redirect
 
 from indralab_auth_tools.src.models import User, Role, BadIdentity,\
@@ -75,6 +76,12 @@ def auth_wrapper(func):
         return ret
 
     return with_auth_log
+
+
+@auth.errorhandler(Exception)
+def handle_any_error(e):
+    logger.exception(e)
+    return jsonify({'message': str(e)}), 500
 
 
 @auth.route('/register', methods=['POST'])
