@@ -64,15 +64,15 @@
         document.querySelector('#overlay-message').textContent = msg;
     }
 
-    function post_auth(action, json, on_complete) {
-        $.ajax({
-            url: AUTH_URLS[action],
-            type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json',
-            data: JSON.stringify(json),
-            complete: on_complete
+    async function post_auth(action, json, on_complete) {
+        const resp = await fetch(AUTH_URLS[action], {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(json)
         });
+        console.log(resp);
+        const resp_json = await resp.json();
+        on_complete(resp_json, resp);
     }
 
     function clear(item, email=true, password=true) {
@@ -121,9 +121,9 @@
         /// If we haven't already...
         if (!checked) {
             // double check to see if we're already logged in.
-            post_auth('login', {}, (xhr) => {
-                if (xhr.status === 200)
-                    success_callback('login', xhr.responseJSON);
+            post_auth('login', {}, (resp_json, resp) => {
+                if (resp.status === 200)
+                    success_callback('login', resp_json);
                 else
                     return login(success_callback, failure_callback, true);
                 return false;
@@ -173,11 +173,11 @@
                     post_auth(
                         this.type.value,
                         {'email': this.email.value, 'password': this.password.value},
-                        (xhr, statusText) => {
-                            console.log(xhr.responseJSON);
+                        (resp_json, resp) => {
+                            console.log(resp_json);
 
-                            if (xhr.status !== 200) {
-                                let msg = xhr.responseJSON.message;
+                            if (resp.status !== 200) {
+                                let msg = resp_json.message;
                                 if (!msg)
                                     msg = "Unknown Reason";
                                 report_login_result(`Could not ${this.type.value}: ${msg}`);
@@ -186,7 +186,7 @@
                                 clear(this, false);
 
                                 if (failure_callback)
-                                    failure_callback(this.type.value, xhr.responseJSON);
+                                    failure_callback(this.type.value, resp_json);
                                 return false;
                             }
 
@@ -205,7 +205,7 @@
 
                             // Call the success callback function.
                             if (success_callback)
-                                success_callback(this.type.value, xhr.responseJSON);
+                                success_callback(this.type.value, resp_json);
                             return false;
 
                         }
