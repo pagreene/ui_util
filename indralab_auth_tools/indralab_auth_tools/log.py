@@ -87,11 +87,17 @@ def set_user_in_log(user):
 
 def end_log(status):
     global CURRENT_LOG
-    assert isinstance(CURRENT_LOG, QueryLogRecorder)
-    CURRENT_LOG.end(status)
-    CURRENT_LOG.save()
-    log_json = CURRENT_LOG.json()
-    CURRENT_LOG = None
+    log_json = {}
+    try:
+        assert isinstance(CURRENT_LOG, QueryLogRecorder)
+        try:
+            CURRENT_LOG.end(status)
+            CURRENT_LOG.save()
+            log_json = CURRENT_LOG.json()
+        except Exception:
+            pass
+    finally:
+        CURRENT_LOG = None
     return log_json
 
 
@@ -102,10 +108,14 @@ def user_log_endpoint(func):
         start_log(SERVICE_NAME)
         try:
             resp = func(*args, **kwargs)
-            status = resp.status
+            if isinstance(resp, str):
+                status = 200
+            else:
+                status = resp.status
         except Exception as e:
             status = 500
         end_log(status)
+        return resp
 
     return run_logged
 
