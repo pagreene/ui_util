@@ -1,9 +1,14 @@
+import logging
 from functools import wraps
-
-from flask import request
 from datetime import datetime
 
+from flask import request, Response
+
 from indralab_auth_tools.src.models import QueryLog
+
+
+logger = logging.getLogger("access-log-manager")
+
 
 SERVICE_NAME = None
 CURRENT_LOG = None
@@ -73,14 +78,14 @@ def is_log_running():
 
 def start_log(service_name):
     global CURRENT_LOG
-    assert CURRENT_LOG is None
+    assert CURRENT_LOG is None, "A log was already initialized."
     CURRENT_LOG = QueryLogRecorder(service_name)
     CURRENT_LOG.start()
     return
 
 
 def set_user_in_log(user):
-    assert isinstance(CURRENT_LOG, QueryLogRecorder)
+    assert isinstance(CURRENT_LOG, QueryLogRecorder), "Log wasn't initialized."
     CURRENT_LOG.set_user(user)
     return
 
@@ -89,13 +94,15 @@ def end_log(status):
     global CURRENT_LOG
     log_json = {}
     try:
-        assert isinstance(CURRENT_LOG, QueryLogRecorder)
+        assert isinstance(CURRENT_LOG, QueryLogRecorder),\
+            "Log was not initialized."
         try:
             CURRENT_LOG.end(status)
             CURRENT_LOG.save()
             log_json = CURRENT_LOG.json()
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error("Failed to save log.")
+            logger.exception(e)
     finally:
         CURRENT_LOG = None
     return log_json
@@ -106,6 +113,7 @@ def user_log_endpoint(func):
     @wraps(func)
     def run_logged(*args, **kwargs):
         start_log(SERVICE_NAME)
+        resp = None
         try:
             resp = func(*args, **kwargs)
             if isinstance(resp, str):
@@ -113,7 +121,10 @@ def user_log_endpoint(func):
             else:
                 status = resp.status
         except Exception as e:
+            logger.warning("Request experienced internal error. Returning 500.")
             status = 500
+            if resp is None:
+                resp = Response(str(e), status)
         end_log(status)
         return resp
 
@@ -125,6 +136,6 @@ def note_in_log(**arguments):
 
     DO *NOT* log user login data (this would store passwords in plain text).
     """
-    assert isinstance(CURRENT_LOG, QueryLogRecorder)
+    assert isinstance(CURRENT_LOG, QueryLogRecorder), "Log not initialized."
     CURRENT_LOG.add_notes(**arguments)
     return
