@@ -119,7 +119,7 @@ def user_log_endpoint(func):
             if isinstance(resp, str):
                 status = 200
             else:
-                status = resp.status
+                status = resp.status_code
         except Exception as e:
             logger.warning("Request experienced internal error. Returning 500.")
             status = 500
