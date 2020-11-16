@@ -7,8 +7,10 @@ from http.cookies import SimpleCookie
 
 from flask_jwt_extended import jwt_optional, get_jwt_identity, \
     create_access_token, set_access_cookies, unset_jwt_cookies, JWTManager
+
 from flask import Blueprint, jsonify, request, redirect
 
+from indralab_auth_tools.log import is_log_running, set_user_in_log
 from indralab_auth_tools.src.models import User, Role, BadIdentity,\
     IntegrityError, start_fresh, AuthLog
 
@@ -75,6 +77,12 @@ def auth_wrapper(func):
         return ret
 
     return with_auth_log
+
+
+@auth.errorhandler(Exception)
+def handle_any_error(e):
+    logger.exception(e)
+    return jsonify({'message': str(e)}), 500
 
 
 @auth.route('/register', methods=['POST'])
@@ -229,4 +237,6 @@ def resolve_auth(query):
         return None, []
 
     logger.info("Identity mapped to the user, returning roles.")
+    if is_log_running():
+        set_user_in_log(current_user)
     return current_user, list(current_user.roles)

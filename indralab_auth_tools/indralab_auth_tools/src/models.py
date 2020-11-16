@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import relationship, backref, sessionmaker
 from sqlalchemy import Boolean, DateTime, Column, Integer, \
                        String, ForeignKey, LargeBinary
-from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.dialects.postgresql import JSON, JSONB
 
 from sqlalchemy.exc import IntegrityError
 
@@ -195,6 +195,23 @@ class AuthLog(Base, _AuthMixin):
     details = Column(JSON)
 
     _label = ['action', 'date']
+
+
+class QueryLog(Base, _AuthMixin):
+    __tablename__ = 'query_log'
+    id = Column(Integer, primary_key=True)
+    service_name = Column(String)
+    start_date = Column(DateTime)
+    end_date = Column(DateTime)
+    result_status = Column(Integer)
+    user_id = Column(Integer, ForeignKey("user.id"))
+    user = relationship(User)
+    user_ip = Column(String(64))
+    user_agent = Column(String)
+    url = Column(String)
+    annotations = Column(JSONB)
+
+    _label = ['start_date', 'user_ip', 'user_id']
 
 
 def hash_password(password, maxtime=0.5, datalength=64):
