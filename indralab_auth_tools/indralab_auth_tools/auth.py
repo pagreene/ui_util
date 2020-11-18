@@ -10,7 +10,8 @@ from flask_jwt_extended import jwt_optional, get_jwt_identity, \
 
 from flask import Blueprint, jsonify, request, redirect
 
-from indralab_auth_tools.log import is_log_running, set_user_in_log
+from indralab_auth_tools.log import is_log_running, set_user_in_log, \
+    set_role_in_log
 from indralab_auth_tools.src.models import User, Role, BadIdentity,\
     IntegrityError, start_fresh, AuthLog
 
@@ -213,7 +214,9 @@ def resolve_auth(query):
     logger.info("Got api key %s" % api_key)
     if api_key:
         logger.info("Using API key role.")
-        return None, [Role.get_by_api_key(api_key)]
+        role = Role.get_by_api_key(api_key)
+        set_role_in_log(role)
+        return None, [role]
 
     user_identity = get_jwt_identity()
     logger.debug("Got user_identity: %s" % user_identity)

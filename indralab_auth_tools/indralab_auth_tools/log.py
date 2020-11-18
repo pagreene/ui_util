@@ -3,6 +3,7 @@ from functools import wraps
 from datetime import datetime
 
 from flask import request, Response
+from werkzeug.exceptions import HTTPException
 
 from indralab_auth_tools.src.models import QueryLog
 
@@ -21,6 +22,7 @@ class QueryLogRecorder:
         self.end_time = None
         self.result_status = None
         self.user_id = None
+        self.role_id = None
         self.user_ip = request.environ['REMOTE_ADDR']
         self.user_agent = request.environ['HTTP_USER_AGENT']
         self.url = request.url
@@ -35,6 +37,9 @@ class QueryLogRecorder:
     def set_user(self, user):
         self.user_id = user.id
 
+    def set_role(self, role):
+        self.role_id = role.id
+
     def end(self, status):
         """Eng this log, marking the end time."""
         if self.end_time is not None:
@@ -47,6 +52,7 @@ class QueryLogRecorder:
         entry = QueryLog(start_date=self.start_time, end_date=self.end_time,
                          url=self.url, user_ip=self.user_ip,
                          user_agent=self.user_agent, user_id=self.user_id,
+                         api_key_role_id=self.role_id,
                          annotations=self.annotations,
                          result_status=self.result_status,
                          service_name=self.service_name)
@@ -90,6 +96,12 @@ def set_user_in_log(user):
     return
 
 
+def set_role_in_log(role):
+    assert isinstance(CURRENT_LOG, QueryLogRecorder), "Log has not been inited."
+    CURRENT_LOG.set_role(role)
+    return
+
+
 def end_log(status):
     global CURRENT_LOG
     log_json = {}
@@ -113,18 +125,20 @@ def user_log_endpoint(func):
     @wraps(func)
     def run_logged(*args, **kwargs):
         start_log(SERVICE_NAME)
-        resp = None
         try:
             resp = func(*args, **kwargs)
             if isinstance(resp, str):
                 status = 200
             else:
                 status = resp.status_code
+        except HTTPException as e:
+            end_log(e.code)
+            raise e
         except Exception as e:
             logger.warning("Request experienced internal error. Returning 500.")
-            status = 500
-            if resp is None:
-                resp = Response(str(e), status)
+            logger.exception(e)
+            end_log(500)
+            raise
         end_log(status)
         return resp
 
