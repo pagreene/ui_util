@@ -11,7 +11,7 @@ from flask_jwt_extended import jwt_optional, get_jwt_identity, \
 from flask import Blueprint, jsonify, request, redirect
 
 from indralab_auth_tools.log import is_log_running, set_user_in_log, \
-    set_roles_in_log, set_role_in_log
+    set_role_in_log
 from indralab_auth_tools.src.models import User, Role, BadIdentity,\
     IntegrityError, start_fresh, AuthLog
 
