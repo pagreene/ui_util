@@ -3,6 +3,7 @@ from functools import wraps
 from datetime import datetime
 
 from flask import request, Response
+from werkzeug.exceptions import HTTPException
 
 from indralab_auth_tools.src.models import QueryLog
 
@@ -124,18 +125,20 @@ def user_log_endpoint(func):
     @wraps(func)
     def run_logged(*args, **kwargs):
         start_log(SERVICE_NAME)
-        resp = None
         try:
             resp = func(*args, **kwargs)
             if isinstance(resp, str):
                 status = 200
             else:
                 status = resp.status_code
+        except HTTPException as e:
+            end_log(e.code)
+            raise e
         except Exception as e:
             logger.warning("Request experienced internal error. Returning 500.")
-            status = 500
-            if resp is None:
-                resp = Response(str(e), status)
+            logger.exception(e)
+            end_log(500)
+            raise
         end_log(status)
         return resp
 
