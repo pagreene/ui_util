@@ -101,8 +101,8 @@ class Role(Base, _AuthMixin):
                                     .format(api_key=api_key))
 
         # Count the number of times this role has been accessed by API key.
-        role.api_access_count += 1
-        session.commit()
+        role.api_access_count = role.api_access_count + 1
+        role.save()
 
         return role
 
