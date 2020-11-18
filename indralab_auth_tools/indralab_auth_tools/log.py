@@ -21,6 +21,7 @@ class QueryLogRecorder:
         self.end_time = None
         self.result_status = None
         self.user_id = None
+        self.role_id = None
         self.user_ip = request.environ['REMOTE_ADDR']
         self.user_agent = request.environ['HTTP_USER_AGENT']
         self.url = request.url
@@ -35,6 +36,9 @@ class QueryLogRecorder:
     def set_user(self, user):
         self.user_id = user.id
 
+    def set_role(self, role):
+        self.role_id = role.id
+
     def end(self, status):
         """Eng this log, marking the end time."""
         if self.end_time is not None:
@@ -47,6 +51,7 @@ class QueryLogRecorder:
         entry = QueryLog(start_date=self.start_time, end_date=self.end_time,
                          url=self.url, user_ip=self.user_ip,
                          user_agent=self.user_agent, user_id=self.user_id,
+                         api_key_role_id=self.role_id,
                          annotations=self.annotations,
                          result_status=self.result_status,
                          service_name=self.service_name)
@@ -87,6 +92,12 @@ def start_log(service_name):
 def set_user_in_log(user):
     assert isinstance(CURRENT_LOG, QueryLogRecorder), "Log wasn't initialized."
     CURRENT_LOG.set_user(user)
+    return
+
+
+def set_role_in_log(role):
+    assert isinstance(CURRENT_LOG, QueryLogRecorder), "Log has not been inited."
+    CURRENT_LOG.set_role(role)
     return
 
 

@@ -205,13 +205,14 @@ class QueryLog(Base, _AuthMixin):
     end_date = Column(DateTime)
     result_status = Column(Integer)
     user_id = Column(Integer, ForeignKey("user.id"))
+    api_key_role_id = Column(Integer, ForeignKey("role.id"))
     user = relationship(User)
     user_ip = Column(String(64))
     user_agent = Column(String)
     url = Column(String)
     annotations = Column(JSONB)
 
-    _label = ['start_date', 'user_ip', 'user_id']
+    _label = ['service_name', 'start_date', 'user_ip']
 
 
 def hash_password(password, maxtime=0.5, datalength=64):
