@@ -8,7 +8,11 @@ from sqlalchemy.ext.declarative import declarative_base
 logger = logging.getLogger(__name__)
 
 try:
-    engine = create_engine(os.environ['INDRALAB_USERS_DB'],
+    db_config = os.environ['INDRALAB_USERS_DB']
+    # This is for handling empty strings set as the environmental variable
+    if not db_config:
+        raise KeyError()
+    engine = create_engine(db_config,
                            convert_unicode=True)
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
@@ -17,7 +21,7 @@ try:
     Base.query = db_session.query_property()
 except KeyError:
     engine = None
-    
+
     class Base(object):
         pass
 
