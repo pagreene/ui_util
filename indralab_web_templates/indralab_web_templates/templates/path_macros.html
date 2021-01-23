@@ -43,10 +43,12 @@
     {% if headers %}
     <thead class="table-head">
     {% for header in headers %}
-    {% if "Test" in headers or "Query" in headers %}
-      <th {% if header not in ["Test", "Top Path", "Query", "Model"] %}style="width: 15%; text-align: center"{% endif %}>{{ header }}</th>
+    {% if "Test" in headers or "Query" in headers or "Paper Title" in headers %}
+      <th {% if header not in ["Test", "Top Path", "Query", "Model", "Paper Title"] %}style="width: 10%; text-align: center"{% endif %}>{{ header }}</th>
     {% elif header in ["Item"] %}
       <th style="width: 30%; text-align: left">{{ header }}</th>
+    {% elif header in ["Evidence Count"] %}
+      <th style="text-align: center;">{{ header }}</th>
     {% else %}
       <th style="text-align: left;">{{ header }}</th>
     {% endif %}
@@ -92,7 +94,11 @@
     {% elif merge and loop.length == 1 %}
       <td colspan="2" style="text-align:center; font-weight: bold;">{{ link_text }}</td>
     {% else %}
+      {% if link_text in ['PubMed', 'PMC', 'DOI', 'N/A'] or link_text|int(-1) != -1 %}
+      <td style="text-align: center">
+      {% else %}
       <td>
+      {% endif %}
       {% if not link_text %}
         <img src="{{ link_address }}"/>
       {% elif link_address and evid_text %}
