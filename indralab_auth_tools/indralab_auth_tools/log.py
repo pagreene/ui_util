@@ -129,6 +129,8 @@ def user_log_endpoint(func):
             resp = func(*args, **kwargs)
             if isinstance(resp, str):
                 status = 200
+            elif isinstance(resp, tuple) and isinstance(resp[1], int):
+                status = resp[1]
             else:
                 status = resp.status_code
         except HTTPException as e:
