@@ -12,8 +12,8 @@ from flask import Blueprint, jsonify, request, redirect
 
 from indralab_auth_tools.log import is_log_running, set_user_in_log, \
     set_role_in_log
-from indralab_auth_tools.src.models import User, Role, BadIdentity,\
-    IntegrityError, start_fresh, AuthLog
+from indralab_auth_tools.src.models import User, Role, BadIdentity, \
+    IntegrityError, start_fresh, AuthLog, UserDatabaseError
 
 auth = Blueprint('auth', __name__, template_folder='templates')
 
@@ -201,7 +201,7 @@ def logout(auth_details, user_identity):
     return resp
 
 
-def resolve_auth(query):
+def resolve_auth(query, failure_reason=None):
     """Get the roles for the current request, either by JWT or API key.
 
     If by API key, the key must be in the query. If by JWT, @jwt_optional or
@@ -214,7 +214,13 @@ def resolve_auth(query):
     logger.info("Got api key %s" % api_key)
     if api_key:
         logger.info("Using API key role.")
-        role = Role.get_by_api_key(api_key)
+        try:
+            role = Role.get_by_api_key(api_key)
+        except UserDatabaseError:
+            if failure_reason is not None:
+                failure_reason['auth_attempted'] = "API key"
+                failure_reason['reason'] = "Invalid"
+            return None, []
         set_role_in_log(role)
         return None, [role]
 
@@ -222,6 +228,9 @@ def resolve_auth(query):
     logger.debug("Got user_identity: %s" % user_identity)
     if not user_identity:
         logger.info("No user identity, no role.")
+        if failure_reason is not None:
+            failure_reason['auth_attempted'] = None
+            failure_reason['reason'] = "No auth"
         return None, []
 
     try:
@@ -229,14 +238,23 @@ def resolve_auth(query):
         logger.debug("Got user: %s" % current_user)
     except BadIdentity:
         logger.info("Identity malformed, no role.")
+        if failure_reason is not None:
+            failure_reason['auth_attempted'] = "Identity"
+            failure_reason['reason'] = "Invalid"
         return None, []
     except Exception as e:
         logger.exception(e)
         logger.error("Unexpected error looking up user.")
+        if failure_reason is not None:
+            failure_reason['auth_attempted'] = "Identity"
+            failure_reason['reason'] = 'Unexpected'
         return None, []
 
     if not current_user:
         logger.info("Identity not mapped to user, no role.")
+        if failure_reason is not None:
+            failure_reason['auth_attempted'] = "Identity"
+            failure_reason['reason'] = "No user"
         return None, []
 
     logger.info("Identity mapped to the user, returning roles.")
