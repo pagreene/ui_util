@@ -207,6 +207,12 @@ def resolve_auth(query, failure_reason=None):
     If by API key, the key must be in the query. If by JWT, @jwt_optional or
     similar must wrap the calling function.
 
+    If the reason for credentials failing is of interest, you can pass an empty
+    dictionary to `failure_reason`. If there is an auth problem, it will be
+    populated with 'auth_attempted' and 'reason', indicating the kind of auth
+    (e.g. "API key" or "Identity") that was attempted, and the reason it was
+    rejected (e.g. "Invalid").
+
     Returns a tuple with the current user, if applicable, and a list of
     associated roles.
     """
